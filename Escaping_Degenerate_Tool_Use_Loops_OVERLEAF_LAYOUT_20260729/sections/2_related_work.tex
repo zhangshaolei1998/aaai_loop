@@ -1,0 +1,28 @@
+\section{Related Work}
+
+
+
+\paragraph{Tool-using LLMs and execution feedback.}
+ReAct interleaves language reasoning with environment actions
+\citep{yao2023react}, while Toolformer and ToolLLM study how language models
+can acquire and invoke external tools \citep{schick2023toolformer,qin2023toollm}.
+This line of work primarily addresses action selection and tool-use
+capability. PERSIST-ACE starts from an already operational tool-using LLM and
+focuses on a later execution problem: a syntactically plausible action can
+continue to produce no new evidence, no task-relevant state change, or the
+same unresolved functional effect.
+
+\paragraph{Execution recovery and loop handling.}
+Early-exit methods reduce repetitive or ineffective behavior by deciding when
+to halt, but termination alone does not repair a recoverable task state
+\citep{lu2025runaway}. Other approaches generate recovery plans at test time,
+as in Reasoning Inception \citep{kim2026rein}, or update the LLM policy so
+that it learns from execution errors, as in Fission-GRPO
+\citep{zhang2026fission}. PERSIST-ACE takes a narrower and more conservative
+route: it does not terminate every loop, invoke an open-ended planner, or
+update model parameters at inference time. Instead, it applies at most one
+frozen, grounded, deterministic correction when the trigger and safety gates
+pass, and preserves the Raw action when grounding is ambiguous or a retry may
+still be productive. Unlike early-exit, generative replanning, or policy
+optimization, its central object is a selective programmatic escape from a
+feedback-visible Functional Loop.

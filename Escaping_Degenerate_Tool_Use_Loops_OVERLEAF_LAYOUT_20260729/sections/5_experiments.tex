@@ -1,0 +1,182 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\begin{table*}[!t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
+\toprule
+Setting & Model & Pass@1 (\%) & $\Delta$ & Pass$^5$ (\%) & $\Delta$ & UX & $\Delta$ \\
+\midrule
+Raw & Ministral-3-14B & 30.5 & -- & 8.7 & -- & 2.95 & -- \\
+Raw & Qwen3-14B & 24.0 & -- & 7.3 & -- & 2.90 & -- \\
+Raw & GPT-5.5 & 56.67 & -- & 34.00 & -- & 3.760 & -- \\
+Raw & Claude-Sonnet-5 & 62.00 & -- & 36.67 & -- & 4.065 & -- \\
+Raw & Claude-Opus-4-8 & 57.47 & -- & 30.00 & -- & 4.022 & -- \\
+Raw & DeepSeek-v4-Flash & 56.9 & -- & 30.0 & -- & 3.72 & -- \\
+Raw & DeepSeek-v4-Pro & 59.1 & -- & 34 & -- & 3.93 & -- \\
+Raw & MiMo-v2.5-pro & 54.5 & -- & 27.3 & -- & 3.96 & -- \\
+Raw & GPT-5.6-Sol & 62.13 & -- & 39.33 & -- & 3.927 & -- \\
+PERSIST-ACE & Ministral-3-14B & 30.9 & +0.4 & 11.3 & +2.6 & 2.96 & +0.01 \\
+PERSIST-ACE & Qwen3-14B & 26.8 & +2.8 & 10.0 & +2.7 & 2.90 & 0 \\
+PERSIST-ACE & GPT-5.5 & 60.80 & +4.13 & 35.33 & +1.33 & 3.788 & +0.028 \\
+PERSIST-ACE & Claude-Sonnet-5 & 62.80 & +0.80 & 36.00 & -0.67 & 4.047 & -0.018 \\
+PERSIST-ACE & Claude-Opus-4-8 & 59.33 & +1.86 & 30.67 & +0.67 & 4.052 & +0.030 \\
+PERSIST-ACE & DeepSeek-v4-Flash & 59.5 & +2.5 & 34.0 & +4.0 & 3.75 & +0.03 \\
+PERSIST-ACE & DeepSeek-v4-Pro & 59.5 & +0.4 & 34.0 & 0 & 3.94 & +0.01 \\
+PERSIST-ACE & MiMo-v2.5-pro & 56.3 & +1.7 & 27.3 & 0 & 3.96 & 0 \\
+PERSIST-ACE & GPT-5.6-Sol & 62.67 & +0.54 & 38.67 & -0.66 & 3.959 & +0.032 \\
+\bottomrule
+\end{tabular*}
+\renewcommand{\arraystretch}{1.0}
+\caption{Overall STATE-Bench test results. Each setting contains 150 tasks and
+five trials, with a fixed 750-trajectory Pass@1 denominator. $\Delta$ denotes
+PERSIST-ACE minus Raw; UX averages valid judged trajectories.}
+\label{tab:state-main}
+\end{table*}
+
+\begin{table*}[!t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrr@{}}
+\toprule
+Setting & Model & Match Score (\%) & $\Delta$ & Case Acc. (\%) & $\Delta$ \\
+\midrule
+Raw & Qwen3-14B & 40.051 & -- & 6.250 & -- \\
+Raw & DeepSeek-v4-Flash & 83.720 & -- & 52.917 & -- \\
+Raw & DeepSeek-v4-Pro & 82.329 & -- & 51.667 & -- \\
+PERSIST-ACE & Qwen3-14B & 42.063 & +2.012 & 6.458 & +0.208 \\
+PERSIST-ACE & DeepSeek-v4-Flash & 84.811 & +1.090 & 54.375 & +1.458 \\
+PERSIST-ACE & DeepSeek-v4-Pro & 83.781 & +1.452 & 55.625 & +3.958 \\
+\bottomrule
+\end{tabular*}
+\renewcommand{\arraystretch}{1.0}
+\caption{Overall DeepPlanning Shopping test results. Each setting contains
+120 tasks and four trials (480 task-runs). $\Delta$ denotes PERSIST-ACE minus
+Raw.}
+\label{tab:deepplanning-main}
+\end{table*}
+
+We compare Raw tool-using LLMs with the same models equipped with PERSIST-ACE. Official
+task measures are primary; Functional Loop behavior and tool use are reported as execution
+diagnostics.
+
+\subsection*{Benchmarks}
+
+\textbf{STATE-Bench.} STATE-Bench v0.8.1 contains 50 held-out tasks in each of
+Travel, Customer Support, and Shopping Assistant. We report Pass@1,
+pass$^5$, and UX. Following the official protocol, Pass@1 is the average
+task-completion rate over five runs per task, whereas pass$^5$ is the percentage
+of tasks completed successfully in all five runs and measures run-to-run
+reliability.
+
+\textbf{DeepPlanning.} We use the 120-task Shopping Planning split of
+DeepPlanning~\citep{zhang2026deepplanning}, reporting Match Score and Case
+Accuracy. Travel Planning is outside this comparison.
+
+\textbf{$\tau$-Knowledge.} This 97-task benchmark evaluates knowledge-intensive
+tool use~\citep{shi2026tauknowledge}. We report Reward mean, pass$^1$--pass$^4$,
+Action Recall, and Document Recall.
+
+\subsection*{Experimental Setup}
+
+\paragraph{Data separation and freezing protocol.}
+We separate Card construction from final evaluation before any test runs. For
+STATE-Bench, we keep the official 50-task test split in each domain and split
+the original 100 training tasks into 70/30 train/development tasks; for
+DeepPlanning Shopping, we use three 60/20/40 train/development/test folds; and
+for $\tau$-Knowledge, we rotate three 32/33/32 partitions through the same
+roles. Training data mine and instantiate Cards, development data select the
+Registry, and all Card definitions and controller settings are frozen before
+held-out testing. For folded benchmarks, we report aggregated out-of-fold test
+results, with exact manifests and Card provenance in the supplement.
+
+\textbf{STATE-Bench.} We evaluate nine LLMs on all 150 test tasks, with five
+runs per task. For each LLM, Raw uses the base model and PERSIST-ACE adds the
+same frozen nine-Card Registry. Tasks, tools, simulator, evaluator, and trial
+identities are otherwise unchanged.
+
+\textbf{DeepPlanning Shopping.} We evaluate Qwen3-14B,
+DeepSeek-v4-Flash, and DeepSeek-v4-Pro on all 120 Shopping tasks, with four
+runs per task. For each LLM, Raw uses the base model and PERSIST-ACE adds the
+same frozen Shopping Registry. Tasks, tools, and trial identities are otherwise
+unchanged.
+
+\textbf{$\tau$-Knowledge.} We evaluate five matched model-version pairs on all
+97 tasks, with four runs per task. For each pair, Raw uses the base model and
+PERSIST-ACE adds the same frozen knowledge-tool Registry. Tasks, tools, and
+trial identities are otherwise unchanged; metrics absent from a stored run are
+marked N/R.
+
+Across benchmarks, invalid executions are kept separate from Functional Loop counts and
+missing telemetry is never reconstructed from aggregate outcomes.
+
+\begin{table*}[!t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{1.5pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ll*{14}{r}@{}}
+\toprule
+Setting & Model & Reward (\%) & $\Delta$ & Pass$^1$ (\%) & $\Delta$ & Pass$^2$ (\%) & $\Delta$ & Pass$^3$ (\%) & $\Delta$ & Pass$^4$ (\%) & $\Delta$ & Action Recall (\%) & $\Delta$ & Doc Recall (\%) & $\Delta$ \\
+\midrule
+
+
+Raw & Claude-Sonnet-5  & 18.44 & -- & 16.24 & -- & 11.00 & -- & 7.99 & -- & 5.15 & -- & 66.02 & -- & 70.29 & -- \\
+Raw & Claude-Opus-4-8  & 18.29 & -- & 17.27 & -- & 10.65 & -- & 7.22 & -- & 5.15 & -- & 68.12 & -- & 62.15 & -- \\
+Raw & GPT-5.5 & 20.11 & -- & 20.05 & -- & 14.58 & -- & 10.22 & -- & 8.14 & -- & 51.46 & -- & 65.29 & -- \\
+Raw & DeepSeek-v4-Flash & 20.10 & -- & 20.10 & -- & 12.37 & -- & 9.79 & -- & 8.25 & -- & 72.97 & -- & 70.35 & -- \\
+Raw & GPT-5.6-Sol  & 20.11 & -- & 20.79 & -- & 13.89 & -- & 10.90 & -- & 8.75 & -- & 51.27 & -- & 72.01 & -- \\
+
+
+PERSIST-ACE & Claude-Sonnet-5  & 18.69 & +0.25 & 17.01 & +0.77 & 11.28 & +0.28 & 8.19 & +0.20 & 6.12 & +0.97 & 66.70 & +0.68 & 70.55 & +0.26 \\
+PERSIST-ACE & Claude-Opus-4-8 & 20.11 & +1.82 & 20.10 & +2.83 & 14.34 & +3.69 & 11.66 & +4.44 & 10.08 & +4.93 & 51.22 & -16.90 & 68.65 & +6.50 \\
+PERSIST-ACE & GPT-5.5 & 21.94 & +1.83 & 22.16 & +2.11 & 15.02 & +0.44 & 11.74 & +1.52 & 9.92 & +1.78 & 52.24 & +0.78 & 68.03 & +2.74 \\
+PERSIST-ACE & DeepSeek-v4-Flash & 20.88 & +0.77 & 20.88 & +0.77 & 13.06 & +0.69 & 10.05 & +0.26 & 8.25 & +0.00 & 75.11 & +2.13 & 71.35 & +1.00 \\
+PERSIST-ACE & GPT-5.6-Sol  & 25.46 & +5.36 & 25.86 & +5.07 & 18.40 & +4.51 & 13.03 & +2.13 & 10.00 & +1.25 & 52.35 & +1.08 & 72.89 & +0.88 \\
+\bottomrule
+\end{tabular*}
+\renewcommand{\arraystretch}{1.0}
+\caption{Overall $\tau$-Knowledge test results. Each setting contains 97 tasks
+and four trials (388 task-runs). $\Delta$ denotes PERSIST-ACE minus Raw.}
+\label{tab:tau-main}
+\end{table*}
+
+\subsection*{Main Results}
+
+\textbf{STATE-Bench.} Table~\ref{tab:state-main} covers nine models spanning
+open and proprietary model families and a wide range of Raw performance.
+Every paired comparison improves Pass@1. The repeated-trial measure improves
+or holds for seven models, and UX is non-decreasing for eight. The strongest
+gains are not confined to either the weakest or strongest baseline, which
+argues against a single-model or simple ceiling explanation. The smaller
+movements in repeated-trial performance and UX also show that the main benefit
+is better task completion, not a uniform shift in every judged outcome.
+
+\textbf{DeepPlanning Shopping.} Table~\ref{tab:deepplanning-main} provides a
+different test: long-horizon product search and planning rather than
+interactive service tasks. All three models improve both matching quality and
+case-level completion, with no execution errors in either arm. The size of the
+gain varies by model, but its direction is consistent. This matters because
+the Shopping Registry is benchmark-specific while the recovery mechanism is
+unchanged, suggesting that the same compilation-and-control design can carry
+different local experience.
+
+\textbf{$\tau$-Knowledge.} Table~\ref{tab:tau-main} extends the comparison to
+knowledge-intensive tool use. Reward improves for every matched model-version
+pair, and all reported pass-rate differences are non-negative. Document recall
+also rises throughout. Auxiliary behavior is not uniformly better---most
+Action Recall values increase, but one model shows a marked decline---so the
+evidence supports better end-task performance rather than dominance on every
+intermediate diagnostic.
+
+Taken together, the three tables show the same top-level pattern across
+different tools, task horizons, and model families: selective recovery raises
+the native task outcome without relying on a single benchmark or model. The
+remaining variation is concentrated in secondary measures, which is expected
+from a sparse local intervention that changes only eligible portions of a
+trajectory.

@@ -1,0 +1,31 @@
+\section{Conclusion}
+
+Functional Loops capture a failure mode that tool-name repetition misses:
+after feedback is visible, tool-using LLMs may issue different calls that make no
+progress and repeat the same unresolved functional effect. This matters because
+the model continues spending interaction budget without changing the state
+that blocks completion. The pattern depends on both the model and the
+environment, and a Functional Loop can still precede a useful retry. On STATE-Bench,
+however, Functional Loop-exposed trajectories are associated with lower scores and more
+calls. A Functional Loop is therefore a useful recovery signal, but not a reason to
+terminate every loop.
+
+The experiments show a consistent task-level benefit. Every reported
+Raw/PERSIST-ACE pair improves its primary outcome across STATE-Bench,
+DeepPlanning Shopping, and $\tau$-Knowledge. The trend persists when different
+models are evaluated on the same benchmark and when the same model is evaluated
+on different benchmarks. Better outcomes do not require uniformly longer successful runs:
+calls per successful trajectory usually decrease and otherwise remain close.
+The ablations further locate the advantage in the recovery design. Online
+Replanning with a generic prompt does not recover the baseline, the Validated Registry intervenes
+more selectively and with lower observed loss than the Unvalidated All-Card
+Registry, and complete Cards outperform operator-only and ungrounded variants
+in held-out same-state comparisons. Independently removing the soft controller
+gate increases coverage but not task performance.
+
+Taken together, the results show why a Functional Loop is a practical unit for LLM tool-use
+recovery. No progress recalls a candidate; repeated effect confirms the Functional Loop;
+Card admission then decides whether it is recoverable. Across heterogeneous
+models and tool environments, this separation improves task outcomes while
+protecting productive retries and avoiding systematic growth in
+successful-trajectory interaction cost.

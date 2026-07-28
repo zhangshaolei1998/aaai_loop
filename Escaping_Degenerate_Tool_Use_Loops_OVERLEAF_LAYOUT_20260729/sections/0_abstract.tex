@@ -1,0 +1,24 @@
+Tool-using LLMs can remain active even after their actions stop changing the
+task-relevant state. We call this pattern a Functional Loop: while a
+requirement remains unresolved, feedback-visible actions make no progress and
+repeat the same functional effect. Functional Loops consume interaction budget without
+resolving the blocked state, yet they are neither repeated tool names nor
+automatic failures. Their prevalence varies by model and environment,
+and trajectories containing a Functional Loop are associated with lower outcomes and greater tool
+use. We therefore treat a Functional Loop as a selective recovery signal, not a command to
+stop.
+
+We present \textbf{PERSIST-ACE}, which compiles recurring training failures
+into typed Recovery Cards. A Card couples a state-sensitive trigger with
+abstention rules, grounded arguments, and a bounded action program. At test
+time, a frozen controller executes one eligible Card or preserves the LLM's
+original tool action, then returns control to the base LLM.
+
+Across STATE-Bench, DeepPlanning Shopping, and $\tau$-Knowledge, every reported
+Raw/PERSIST-ACE pair improves its primary task outcome. The same trend appears
+when either the model or benchmark is held fixed, while successful-trajectory
+tool cost usually falls or remains close. Ablations show that generic
+prompting is insufficient, Card validation reduces unnecessary exposure,
+and complete state-matched Cards outperform operator-only or ungrounded variants.
+Together, the results support selective programmatic recovery as an effective
+way to reuse failure experience during tool execution.
